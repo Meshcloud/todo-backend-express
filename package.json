@@ -18,13 +18,13 @@
   },
   "homepage": "https://github.com/dtao/todo-backend-express",
   "engines": {
-    "node": "0.10.x"
+    "node": "6.x"
   },
   "dependencies": {
     "body-parser": "^1.4.3",
-    "db-migrate": "^0.6.4",
+    "db-migrate": "^0.10.0-beta.20",
+    "db-migrate-pg": "^0.1.11",
     "express": "^4.5.1",
-    "pg": "^3.4.0",
-    "pg.js": "^3.3.0"
+    "pg": "^6.2.3"
   }
 }

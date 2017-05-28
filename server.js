@@ -1,7 +1,11 @@
 var app = require('express')(),
     bodyParser = require('body-parser'),
-    backend = require('./backend');
+    backend = require('./backend'),
+    DBMigrate = require('db-migrate');
 
+var vcap_services = JSON.parse(process.env.VCAP_SERVICES);
+var cfservice = (vcap_services && vcap_services.PostgreSQL && vcap_services.PostgreSQL.length && vcap_services.PostgreSQL[0].credentials.url);
+var CONNECTION_STRING = cfservice || process.env.DATABASE_URL;
 // ----- Parse JSON requests
 
 app.use(bodyParser.json());
@@ -17,12 +21,13 @@ app.use(function(req, res, next) {
 
 // ----- The API implementation
 
-var todos = backend(process.env.DATABASE_URL);
+var todos = backend(CONNECTION_STRING);
 
 function createCallback(res, onSuccess) {
   return function callback(err, data) {
     if (err || !data) {
-      res.send(500, 'Something bad happened!');
+      res.status(500).send('Something bad happened!');
+      console.error(err);
       return;
     }
 
@@ -81,4 +86,5 @@ app.delete('/:id', function(req, res) {
   }));
 });
 
-app.listen(Number(process.env.PORT || 5000));
+var dbmigrate = DBMigrate.getInstance(true, {defaultEnv: 'prod', prod: CONNECTION_STRING});
+dbmigrate.up().then(() => app.listen(Number(process.env.PORT || 5000)));

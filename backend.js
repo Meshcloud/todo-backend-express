@@ -1,4 +1,4 @@
-var pg = require('pg.js');
+var pg = require('pg');
 
 module.exports = function createTodoBackend(connectionString) {
   function query(query, params, callback) {
